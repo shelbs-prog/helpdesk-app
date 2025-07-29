@@ -20,6 +20,8 @@ table {
     width: 80%;
     border-collapse: collapse;
     background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th, td {
@@ -30,4 +32,30 @@ th, td {
 
 th {
     background: #eee;
+}
+
+.low { color: green; }
+.medium { color: orange; }
+.high { color: red; font-weight: bold; }
+
+tr:hover {
+  background-color: #f0f8ff;
+  transition: background 0.3s ease;
+}
+
+body {
+  background: linear-gradient(to bottom right, #f4f4f4, #e8ecf0);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border: 2px solid #6699cc;
+  box-shadow: 0 0 5px rgba(102, 153, 204, 0.5);
+}
+
+button:hover {
+  transform: scale(1.05);
+  background-color: #6699cc;
+  color: #fff;
+  transition: 0.3s ease;
 }
