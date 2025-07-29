@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IT Help Desk - Submit Ticket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Submit a Help Desk Ticket</h1>
+    <form action="/submit_ticket" method="post">
+        <label for="title">Issue Title:</label>
+        <input type="text" id="title" name="title" required>
+        <br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+        <br>
+        <button type="submit">Submit Ticket</button>
+    </form>
+    <br>
+    <a href="/tickets">View All Tickets</a>
+</body>
+</html>
