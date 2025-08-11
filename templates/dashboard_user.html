@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard | IT Help Desk{% endblock %}
+{% block heading %}Welcome to Your Dashboard{% endblock %}
+
+{% block content %}
+<!-- Action Cards -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body text-center">
+                <h5 class="card-title">Submit a New Ticket</h5>
+                <a href="{{ url_for('index') }}" class="btn btn-light mt-2">Create Ticket</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body text-center">
+                <h5 class="card-title">View My Tickets</h5>
+                <a href="{{ url_for('tickets_view') }}" class="btn btn-light mt-2">View Tickets</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="card mb-5">
+    <div class="card-header">My Ticket Summary</div>
+    <div class="card-body">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Open Tickets
+                <span class="badge bg-warning rounded-pill">{{ open_count }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Closed Tickets
+                <span class="badge bg-success rounded-pill">{{ closed_count }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Overdue Tickets
+                <span class="badge bg-danger rounded-pill">{{ overdue_count }}</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Closed Tickets Table -->
+<h2 class="mb-3">My Closed Tickets</h2>
+
+<form action="{{ url_for(form_action) }}" method="get" class="mb-4 d-flex gap-2">
+    <input type="text" name="search" class="form-control" placeholder="Search by ID, title, or description..."
+           value="{{ request.args.get('search', '') }}">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th style="width: 70px;">ID</th>
+            <th style="width: 220px;">Title</th>
+            <th>Description</th>
+            <th style="width: 120px;">Status</th>
+            <th style="width: 120px;">Priority</th>
+            <th style="width: 160px;">Submitted By</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.id }}</td>
+            <td>{{ ticket.title }}</td>
+            <td>{{ ticket.description }}</td>
+            <td>{{ ticket.status }}</td>
+            <td class="{{ ticket.priority|lower }}">{{ ticket.priority }}</td>
+            <!-- For the user dashboard, it's always the current user -->
+            <td>{{ current_user.username }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center">No closed tickets found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

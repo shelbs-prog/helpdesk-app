@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | IT Help Desk{% endblock %}
+{% block heading %}System Overview{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row text-center mb-4">
+    <div class="col-md-3">
+        <a href="{{ url_for('tickets_view') }}" class="text-decoration-none">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Tickets</h5>
+                    <p class="card-text fs-2">{{ ticket_count }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('tickets_view') }}" class="text-decoration-none">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Open Tickets</h5>
+                    <p class="card-text fs-2">{{ open_count }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('closed_tickets_view') }}" class="text-decoration-none">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Closed Tickets</h5>
+                    <p class="card-text fs-2">{{ closed_count }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('tickets_view') }}" class="text-decoration-none">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Overdue Tickets</h5>
+                    <p class="card-text fs-2">{{ overdue_count }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Ticket Trends Chart -->
+<div class="card mb-4">
+    <div class="card-header">Ticket Trends</div>
+    <div class="card-body">
+        <canvas id="ticketTrendChart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="card mb-5">
+    <div class="card-header">Ticket Categories</div>
+    <div class="card-body">
+        <ul class="list-group">
+            {% for category, count in category_summary %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ category }}
+                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+            </li>
+            {% else %}
+            <li class="list-group-item text-muted">No category data available</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- Admin Ticket Table -->
+<div class="card mb-5">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>All Tickets</span>
+        <span class="badge bg-secondary">Rendered: {{ tickets|length }}</span>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Change Status</th>
+                    <th>Priority</th>
+                    <th>Change Priority</th>
+                    <th>Submitted By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.id }}</td>
+                    <td>{{ ticket.title }}</td>
+                    <td>{{ ticket.description }}</td>
+                    <td>{{ ticket.status }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('update_status', ticket_id=ticket.id) }}">
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="Open" {% if ticket.status == 'Open' %}selected{% endif %}>Open</option>
+                                <option value="Closed" {% if ticket.status == 'Closed' %}selected{% endif %}>Closed</option>
+                                <option value="In Progress" {% if ticket.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="{{ ticket.priority|lower }}">{{ ticket.priority }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('update_priority', ticket_id=ticket.id) }}">
+                            <select name="priority" onchange="this.form.submit()">
+                                <option value="Low" {% if ticket.priority == 'Low' %}selected{% endif %}>Low</option>
+                                <option value="Medium" {% if ticket.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                                <option value="High" {% if ticket.priority == 'High' %}selected{% endif %}>High</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>{{ ticket.user.username if ticket.user else 'Unknown' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">No tickets found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('ticketTrendChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            datasets: [{
+                label: 'Tickets Created',
+                data: [5, 8, 4, 6, 7], // Replace with dynamic data if needed
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}IT Help Desk{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="container py-4">
+
+  <!-- Navigation & Dashboard Links -->
+  <div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-3">
+    {% if current_user.is_authenticated and request.endpoint != 'login' %}
+      {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-dark">Go to Admin Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('dashboard_user') }}" class="btn btn-outline-primary">My Dashboard</a>
+      {% endif %}
+
+      <!-- Ticket Links -->
+      <a href="{{ url_for('submit_ticket') }}" class="btn btn-outline-success">Submit Ticket</a>
+      <a href="{{ url_for('tickets_view') }}" class="btn btn-outline-info">All Tickets</a>
+      <a href="{{ url_for('closed_tickets_view') }}" class="btn btn-outline-secondary">Closed Tickets</a>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+    {% endif %}
+
+    <!-- Dark Mode Toggle (always visible) -->
+    <button id="darkModeToggle" class="btn btn-outline-dark">Toggle Dark Mode</button>
+  </div>
+
+  <!-- Page Heading -->
+  <h1 class="mb-3">{% block heading %}{% endblock %}</h1>
+
+  <!-- Nav Tabs (only for authenticated users) -->
+  {% if current_user.is_authenticated and request.endpoint != 'login' %}
+  <nav class="mb-4">
+    <ul class="nav nav-pills flex-wrap gap-2">
+      {% if request.endpoint != 'index' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Submit Ticket</a></li>
+      {% endif %}
+      {% if request.endpoint != 'tickets_view' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('tickets_view') }}">All Tickets</a></li>
+      {% endif %}
+      {% if request.endpoint != 'closed_tickets_view' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('closed_tickets_view') }}">Closed Tickets</a></li>
+      {% endif %}
+      {% if request.endpoint != 'logout' %}
+        <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('logout') }}">Logout</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- Main Content -->
+  {% block content %}{% endblock %}
+
+  <!-- Dark Mode Script -->
+  <script>
+    const toggleButton = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      body.classList.add('dark-mode');
+    }
+
+    toggleButton.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      if (body.classList.contains('dark-mode')) {
+        localStorage.setItem('darkMode', 'enabled');
+      } else {
+        localStorage.setItem('darkMode', 'disabled');
+      }
+    });
+  </script>
+</body>
+</html>
