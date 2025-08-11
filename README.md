@@ -8,7 +8,7 @@ A web-based support ticket system built with Flask, SQLAlchemy, and SQLite. This
 - 📂 View Open and Closed ticket queues separately
 - 🕒 Track ticket creation time (date_created)
 - 📊 Dynamic search with case-insensitive filtering
-- 🧮 Calculate ticket durations using Python timedelta
+- 🧮 Calculate ticket durations using Python
 
 🧰 Technologies Used
 | Tool | Purpose | 
